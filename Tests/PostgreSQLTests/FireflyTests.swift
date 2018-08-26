@@ -47,7 +47,7 @@ class FireflyTests: XCTestCase {
 			return XCTFail("No result")
 		}
 
-		XCTAssertEqualWithAccuracy(result, 3.0, accuracy: 1e-5)
+		XCTAssertEqual(result, 3.0, accuracy: 1e-5)
 	}
 
 	func testHandlesRealFloat() throws {
@@ -55,8 +55,27 @@ class FireflyTests: XCTestCase {
 			return XCTFail("No result")
 		}
 
-		XCTAssertEqualWithAccuracy(result, 3.0, accuracy: 1e-5)
+		XCTAssertEqual(result, 3.0, accuracy: 1e-5)
 	}
+
+	func testHandlesInt16() throws {
+		let result: Int16? = try connection.scalar(executing: "select cast(3 as smallint)")
+
+		XCTAssertEqual(result, 3)
+	}
+
+	func testHandlesInt32() throws {
+		let result: Int32? = try connection.scalar(executing: "select cast(3 as int)")
+
+		XCTAssertEqual(result, 3)
+	}
+
+	func testHandlesInt64() throws {
+		let result: Int64? = try connection.scalar(executing: "select count(*) from Crew")
+
+		XCTAssertEqual(result, 8)
+	}
+
 }
 
 extension FireflyTests {
@@ -69,6 +88,9 @@ extension FireflyTests {
 		("testHandlesBlob", testHandlesBlob),
 		("testHandlesRealDouble", testHandlesRealDouble),
 		("testHandlesRealFloat", testHandlesRealFloat),
+		("testHandlesInt16", testHandlesInt16),
+		("testHandlesInt32", testHandlesInt32),
+		("testHandlesInt64", testHandlesInt64),
 	]
 }
 

@@ -11,6 +11,27 @@ extension Int: ResultValue {
 	}
 }
 
+extension Int16: ResultValue {
+	public init(pqValue bytes: UnsafeMutablePointer<Int8>, count: Int) {
+		let bigEndian = bytes.withMemoryRebound(to: Int16.self, capacity: 1) { $0.pointee }
+		self.init(bigEndian: bigEndian)
+	}
+}
+
+extension Int32: ResultValue {
+	public init(pqValue bytes: UnsafeMutablePointer<Int8>, count: Int) {
+		let bigEndian = bytes.withMemoryRebound(to: Int32.self, capacity: 1) { $0.pointee }
+		self.init(bigEndian: bigEndian)
+	}
+}
+
+extension Int64: ResultValue {
+	public init(pqValue bytes: UnsafeMutablePointer<Int8>, count: Int) {
+		let bigEndian = bytes.withMemoryRebound(to: Int64.self, capacity: 1) { $0.pointee }
+		self.init(bigEndian: bigEndian)
+	}
+}
+
 extension Float: ResultValue {
 	public init(pqValue bytes: UnsafeMutablePointer<Int8>, count: Int) {
 		let bigEndian = bytes.withMemoryRebound(to: UInt32.self, capacity: 1) { $0.pointee }
