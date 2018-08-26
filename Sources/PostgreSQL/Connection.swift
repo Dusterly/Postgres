@@ -12,7 +12,8 @@ public struct Connection {
 		let connectionString = "host=\(host) " +
 				"port=\(port) " +
 				"dbname=\(database) " +
-				"user=\(credentials.username)"
+				"user=\(credentials.username) " +
+				"password=\(credentials.password)"
 		guard let conn = PQconnectdb(connectionString) else {
 			throw PostgreSQLError.generic
 		}
