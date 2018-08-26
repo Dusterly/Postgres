@@ -18,6 +18,14 @@ class FireflyTests: XCTestCase {
 	func testThrowsIfIncorrectPassword() {
 		XCTAssertThrowsError(try Connection(host: fireflyHost.value, database: fireflyDatabase.value, credentials: Credentials(username: "postgres", password: "invalid")))
 	}
+
+	func testFindsTheCrew() throws {
+		let connection = try Connection(host: fireflyHost.value, database: fireflyDatabase.value, credentials: validCredentials)
+
+		let result = try connection.scalar(executing: "select count(*) from Crew")
+
+		XCTAssertEqual(result as? Int, 8)
+	}
 }
 
 extension FireflyTests {
@@ -25,6 +33,7 @@ extension FireflyTests {
 		("testThrowsIfDatabaseDoesNotExist", testThrowsIfDatabaseDoesNotExist),
 		("testConnectsToExistingDatabase", testConnectsToExistingDatabase),
 		("testThrowsIfIncorrectPassword", testThrowsIfIncorrectPassword),
+		("testFindsTheCrew", testFindsTheCrew),
 	]
 }
 

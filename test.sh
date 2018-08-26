@@ -22,11 +22,13 @@ if [[ "$(docker image ls -q psql_dev 2> /dev/null)" == "" ]]; then
 fi
 
 docker build -t pg_test -f test.dockerfile . && \
-docker run --name pg_test \
+docker run \
+	--name pg_test \
 	--link firefly:postgres \
 	-e firefly_postgres_host=postgres \
 	-e firefly_postgres_database=postgres \
-	-itd pg_test bash && \
+	-itd pg_test \
+	bash && \
 docker start pg_test && \
 docker exec pg_test swift test -c release
 
