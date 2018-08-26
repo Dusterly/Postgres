@@ -36,6 +36,18 @@ class FireflyTests: XCTestCase {
 		XCTAssertEqual(result, "Hey, Kaylee")
 	}
 
+	func testHandlesBlob() throws {
+		let result: Data? = try connection.scalar(executing: "select data from TestData where data is not null")
+
+		XCTAssertEqual(result.flatMap { String(data: $0, encoding: .ascii) }, "data_only")
+	}
+
+	func testHandlesReal() throws {
+		let result: Double? = try connection.scalar(executing: "select cast(3.0 as double precision)")
+
+		XCTAssertEqual(result, 3.0)
+	}
+
 }
 
 extension FireflyTests {

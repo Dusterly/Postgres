@@ -32,7 +32,7 @@ public struct Connection {
 
 		guard let value = PQgetvalue(res, 0, 0) else { return nil }
 
-		return T.init(value: value)
+		return T.init(pqValue: value, count: Int(PQgetlength(res, 0, 0)))
 	}
 }
 
