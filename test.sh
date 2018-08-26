@@ -17,16 +17,22 @@ function display_result {
 	fi
 }
 
-if [[ "$(docker images -q sqlite3_dev 2> /dev/null)" == "" ]]; then
-	docker build -f sqlite3.dockerfile -t sqlite3_dev .
+if [[ "$(docker image ls -q psql_dev 2> /dev/null)" == "" ]]; then
+	docker build -f psql_dev.dockerfile -t psql_dev .
 fi
 
-docker build -f test.dockerfile -t test_run .
+docker build -t pg_test -f test.dockerfile . && \
+docker run --name pg_test \
+	--link firefly:postgres \
+	-e firefly_postgres_host=postgres \
+	-e firefly_postgres_database=postgres \
+	-itd pg_test bash && \
+docker start pg_test && \
+docker exec pg_test swift test -c release
 
 result=$?
 display_result $result
 
-if [[ $result = 0 ]]; then
-    echo "clean-up after test" &&
-    docker image rm test_run
-fi
+docker container stop pg_test > /dev/null
+docker container rm pg_test > /dev/null
+docker image rm pg_test > /dev/null

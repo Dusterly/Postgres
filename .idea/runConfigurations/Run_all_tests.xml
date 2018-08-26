@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Run all tests" type="OCUnitRunConfiguration" factoryName="XCTest/Kiwi" PASS_PARENT_ENVS_2="true" PROJECT_NAME="PostgreSQL" TARGET_NAME="PostgreSQLTests" CONFIG_NAME="Debug" SCHEME_NAME="Run all tests" IS_LOCATION_SIMULATION_ALLOWED="false" LOCATION_SCENARIO_ID="com.apple.dt.IDEFoundation.CurrentLocationScenarioIdentifier" LOCATION_SCENARIO_TYPE="1" TEST_MODE="SUITE_TEST" XCODE_SKIPPED_TESTS_HASH_CODE="0">
     <envs>
-      <env name="firefly_postgres_host" value="192.168.0.12:5432" />
+      <env name="firefly_postgres_host" value="192.168.0.12" />
       <env name="firefly_postgres_database" value="firefly" />
     </envs>
     <method v="2">
