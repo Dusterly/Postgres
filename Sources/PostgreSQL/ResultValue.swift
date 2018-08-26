@@ -11,6 +11,12 @@ extension Int: ResultValue {
 	}
 }
 
+extension Float: ResultValue {
+	public init(pqValue bytes: UnsafeMutablePointer<Int8>, count: Int) {
+		let bigEndian = bytes.withMemoryRebound(to: UInt32.self, capacity: 1) { $0.pointee }
+		self.init(Float32(bitPattern: UInt32(bigEndian: bigEndian)))
+	}
+}
 
 extension Double: ResultValue {
 	public init(pqValue bytes: UnsafeMutablePointer<Int8>, count: Int) {

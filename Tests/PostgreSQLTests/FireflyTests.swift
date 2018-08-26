@@ -42,12 +42,21 @@ class FireflyTests: XCTestCase {
 		XCTAssertEqual(result.flatMap { String(data: $0, encoding: .ascii) }, "data_only")
 	}
 
-	func testHandlesReal() throws {
-		let result: Double? = try connection.scalar(executing: "select cast(3.0 as double precision)")
+	func testHandlesRealDouble() throws {
+		guard let result: Double = try connection.scalar(executing: "select cast(3.0 as double precision)") else {
+			return XCTFail("No result")
+		}
 
-		XCTAssertEqual(result, 3.0)
+		XCTAssertEqualWithAccuracy(result, 3.0, accuracy: 1e-5)
 	}
 
+	func testHandlesRealFloat() throws {
+		guard let result: Float = try connection.scalar(executing: "select cast(3.0 as real)") else {
+			return XCTFail("No result")
+		}
+
+		XCTAssertEqualWithAccuracy(result, 3.0, accuracy: 1e-5)
+	}
 }
 
 extension FireflyTests {
@@ -57,6 +66,9 @@ extension FireflyTests {
 		("testThrowsIfIncorrectPassword", testThrowsIfIncorrectPassword),
 		("testFindsTheCrew", testFindsTheCrew),
 		("testHandlesText", testHandlesText),
+		("testHandlesBlob", testHandlesBlob),
+		("testHandlesRealDouble", testHandlesRealDouble),
+		("testHandlesRealFloat", testHandlesRealFloat),
 	]
 }
 
