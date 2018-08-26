@@ -7,6 +7,10 @@ class FireflyTests: XCTestCase {
 	private let fireflyDatabase = EnvironmentVariable(name: "firefly_postgres_database")
 	private let validCredentials = Credentials(username: "postgres", password: "allowme")
 
+	private var connection: Connection {
+		return try! Connection(host: fireflyHost.value, database: fireflyDatabase.value, credentials: validCredentials)
+	}
+
 	func testThrowsIfDatabaseDoesNotExist() {
 		XCTAssertThrowsError(try Connection(host: fireflyHost.value, database: "doesn't exist", credentials: validCredentials))
 	}
@@ -20,7 +24,6 @@ class FireflyTests: XCTestCase {
 	}
 
 	func testFindsTheCrew() throws {
-		let connection = try Connection(host: fireflyHost.value, database: fireflyDatabase.value, credentials: validCredentials)
 
 		let result: Int? = try connection.scalar(executing: "select count(*) from Crew")
 
@@ -28,8 +31,6 @@ class FireflyTests: XCTestCase {
 	}
 
 	func testHandlesText() throws {
-		let connection = try Connection(host: fireflyHost.value, database: fireflyDatabase.value, credentials: validCredentials)
-
 		let result: String? = try connection.scalar(executing: "select 'Hey, Kaylee'")
 
 		XCTAssertEqual(result, "Hey, Kaylee")
