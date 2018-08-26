@@ -25,15 +25,14 @@ public struct Connection {
 		self.connPointer = conn
 	}
 
-	public func scalar(executing statement: String) throws -> Int? {
+	public func scalar<T: ResultValue>(executing statement: String) throws -> T? {
 		guard let res = PQexecParams(connPointer, statement, 0, [], [], [], [], 1) else {
 			throw PostgreSQLError.message(lastErrorMessage(for: connPointer))
 		}
 
 		guard let value = PQgetvalue(res, 0, 0) else { return nil }
 
-		let bigEndian = value.withMemoryRebound(to: Int.self, capacity: 1) { $0.pointee }
-		return Int(bigEndian: bigEndian)
+		return T.init(value: value)
 	}
 }
 

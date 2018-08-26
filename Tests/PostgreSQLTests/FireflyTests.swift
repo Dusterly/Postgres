@@ -22,10 +22,19 @@ class FireflyTests: XCTestCase {
 	func testFindsTheCrew() throws {
 		let connection = try Connection(host: fireflyHost.value, database: fireflyDatabase.value, credentials: validCredentials)
 
-		let result = try connection.scalar(executing: "select count(*) from Crew")
+		let result: Int? = try connection.scalar(executing: "select count(*) from Crew")
 
-		XCTAssertEqual(result as? Int, 8)
+		XCTAssertEqual(result, 8)
 	}
+
+	func testHandlesText() throws {
+		let connection = try Connection(host: fireflyHost.value, database: fireflyDatabase.value, credentials: validCredentials)
+
+		let result: String? = try connection.scalar(executing: "select 'Hey, Kaylee'")
+
+		XCTAssertEqual(result, "Hey, Kaylee")
+	}
+
 }
 
 extension FireflyTests {
@@ -34,6 +43,7 @@ extension FireflyTests {
 		("testConnectsToExistingDatabase", testConnectsToExistingDatabase),
 		("testThrowsIfIncorrectPassword", testThrowsIfIncorrectPassword),
 		("testFindsTheCrew", testFindsTheCrew),
+		("testHandlesText", testHandlesText),
 	]
 }
 
