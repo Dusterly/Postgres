@@ -4,33 +4,17 @@ public protocol ResultValue {
 	init(pqValue bytes: UnsafeMutablePointer<Int8>, count: Int)
 }
 
-extension Int: ResultValue {
+extension FixedWidthInteger where Self: ResultValue {
 	public init(pqValue bytes: UnsafeMutablePointer<Int8>, count: Int) {
-		let bigEndian = bytes.withMemoryRebound(to: Int.self, capacity: 1) { $0.pointee }
+		let bigEndian = bytes.withMemoryRebound(to: Self.self, capacity: 1) { $0.pointee }
 		self.init(bigEndian: bigEndian)
 	}
 }
 
-extension Int16: ResultValue {
-	public init(pqValue bytes: UnsafeMutablePointer<Int8>, count: Int) {
-		let bigEndian = bytes.withMemoryRebound(to: Int16.self, capacity: 1) { $0.pointee }
-		self.init(bigEndian: bigEndian)
-	}
-}
-
-extension Int32: ResultValue {
-	public init(pqValue bytes: UnsafeMutablePointer<Int8>, count: Int) {
-		let bigEndian = bytes.withMemoryRebound(to: Int32.self, capacity: 1) { $0.pointee }
-		self.init(bigEndian: bigEndian)
-	}
-}
-
-extension Int64: ResultValue {
-	public init(pqValue bytes: UnsafeMutablePointer<Int8>, count: Int) {
-		let bigEndian = bytes.withMemoryRebound(to: Int64.self, capacity: 1) { $0.pointee }
-		self.init(bigEndian: bigEndian)
-	}
-}
+extension Int16: ResultValue {}
+extension Int32: ResultValue {}
+extension Int64: ResultValue {}
+extension Int: ResultValue {}
 
 extension Float: ResultValue {
 	public init(pqValue bytes: UnsafeMutablePointer<Int8>, count: Int) {
@@ -54,7 +38,6 @@ extension String: ResultValue {
 
 extension Data: ResultValue {
 	public init(pqValue bytes: UnsafeMutablePointer<Int8>, count: Int) {
-		print("Data bytes, count: \(count)")
 		self.init(bytes: bytes, count: count)
 	}
 }
