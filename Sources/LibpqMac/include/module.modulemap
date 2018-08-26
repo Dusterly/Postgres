@@ -1,0 +1,5 @@
+module LibpqMac {
+    header "/usr/local/opt/libpq/include/libpq-fe.h"
+    link "pq"
+    export *
+}
