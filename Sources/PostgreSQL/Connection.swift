@@ -5,8 +5,14 @@ import LibpqLinux
 #endif
 
 public struct Connection {
-	public init(host: String, database: String) throws {
-		let connectionString = "host=\(host) port=\(5432) dbname=\(database) user=postgres"
+	public init(host: String,
+	            port: UInt16 = 5432,
+	            database: String,
+	            credentials: Credentials) throws {
+		let connectionString = "host=\(host) " +
+				"port=\(port) " +
+				"dbname=\(database) " +
+				"user=\(credentials.username)"
 		guard let conn = PQconnectdb(connectionString) else {
 			throw PostgreSQLError.generic
 		}
