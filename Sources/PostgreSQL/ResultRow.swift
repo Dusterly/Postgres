@@ -12,18 +12,30 @@ struct ResultRow {
 	let row: Int32
 
 	func columnValues() -> [String: ResultValue] {
-		var rowData: [String: ResultValue] = [:]
+		return Dictionary(uniqueKeysWithValues: columnValuePairs().compactMap {
+			guard let value = $1 else { return nil }
+			return ($0, value)
+		})
+	}
+
+	func columnValuePairs() -> [(String, ResultValue?)] {
 		let columns = PQnfields(resPointer)
-		for column in 0..<columns {
-			guard PQgetisnull(resPointer, row, column) != 1 else { continue }
-			guard let value = PQgetvalue(resPointer, row, column) else { continue }
-
-			let name = String(cString: PQfname(resPointer, Int32(column)))
-			let type = self.type(ofColumnAt: column)
-			rowData[name] = type.init(pqValue: value, count: Int(PQgetlength(resPointer, row, column)))
+		return (0..<columns).map { column in
+			return (name(ofColumnAt: column), value(at: column))
 		}
+	}
 
-		return rowData
+	private func value(at column: Int32) -> ResultValue? {
+		guard PQgetisnull(resPointer, row, column) != 1 else { return nil }
+		guard let pqValue = PQgetvalue(resPointer, row, column) else { return nil }
+
+		let type = self.type(ofColumnAt: column)
+		let length = Int(PQgetlength(resPointer, row, column))
+		return type.init(pqValue: pqValue, count: length)
+	}
+
+	private func name(ofColumnAt column: Int32) -> String {
+		return String(cString: PQfname(resPointer, Int32(column)))
 	}
 
 	private func type(ofColumnAt column: Int32) -> ResultValue.Type {
