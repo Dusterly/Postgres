@@ -27,6 +27,18 @@ public struct Connection {
 	}
 
 	public func scalar<T: ResultValue>(executing query: String, _ parameters: Int...) throws -> T? {
+		let res = try resPointer(executing: query, parameters: parameters)
+
+		return try Operation(resPointer: res).scalar()
+	}
+
+	public func resultSet(executing query: String) throws -> [[String: ResultValue]] {
+		let res = try resPointer(executing: query, parameters: [])
+
+		return try Operation(resPointer: res).resultSet()
+	}
+
+	private func resPointer(executing statement: String, parameters: [Int]) throws -> OpaquePointer {
 		let byteArrays = parameters.map { (v: Int) -> [Int8] in
 			var value = v.bigEndian
 			let buffer = withUnsafePointer(to: &value) { valuePointer in
@@ -37,7 +49,7 @@ public struct Connection {
 			return Array(buffer)
 		}
 		guard let res = PQexecParams(
-				connPointer, query,
+				connPointer, statement,
 				Int32(byteArrays.count),
 				byteArrays.map { _ in 20 },
 				byteArrays.map { UnsafePointer<Int8>($0) },
@@ -48,16 +60,7 @@ public struct Connection {
 				else {
 			throw PostgreSQLError.message(lastErrorMessage(for: connPointer))
 		}
-
-		return try Operation(resPointer: res).scalar()
-	}
-
-	public func resultSet(executing query: String) throws -> [[String: ResultValue]] {
-		guard let res = PQexecParams(connPointer, query, 0, [], [], [], [], 1) else {
-			throw PostgreSQLError.message(lastErrorMessage(for: connPointer))
-		}
-
-		return try Operation(resPointer: res).resultSet()
+		return res
 	}
 }
 
