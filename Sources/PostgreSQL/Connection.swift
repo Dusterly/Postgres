@@ -25,8 +25,8 @@ public struct Connection {
 		self.connPointer = conn
 	}
 
-	public func scalar<T: ResultValue>(executing statement: String) throws -> T? {
-		guard let res = PQexecParams(connPointer, statement, 0, [], [], [], [], 1) else {
+	public func scalar<T: ResultValue>(executing query: String) throws -> T? {
+		guard let res = PQexecParams(connPointer, query, 0, [], [], [], [], 1) else {
 			throw PostgreSQLError.message(lastErrorMessage(for: connPointer))
 		}
 
