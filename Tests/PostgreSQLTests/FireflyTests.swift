@@ -90,6 +90,11 @@ class FireflyTests: XCTestCase {
 		XCTAssertEqual(result.first as? [String: String], ["name": "Mal", "role": "Captain"])
 	}
 
+	func testHandlesIntegerParameters() throws {
+		let result: Int? = try connection.scalar(executing: "select $1", 4)
+
+		XCTAssertEqual(result, 4)
+	}
 }
 
 extension FireflyTests {
