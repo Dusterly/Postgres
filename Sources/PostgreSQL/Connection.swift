@@ -42,33 +42,12 @@ public struct Connection {
 			throw PostgreSQLError.message(lastErrorMessage(for: connPointer))
 		}
 
-		let rows = PQntuples(res)
-		let columns = PQnfields(res)
-
 		var result: [[String: ResultValue]] = []
+		let rows = PQntuples(res)
 		for row in 0..<rows {
-			var rowData: [String: ResultValue] = [:]
-			for column in 0..<columns {
-				guard PQgetisnull(res, row, column) != 1 else { continue }
-				guard let value = PQgetvalue(res, row, column) else { continue }
-
-				let name = String(cString: PQfname(res, Int32(column)))
-				let type = datatype(res: res, column: column)
-				rowData[name] = type.init(pqValue: value, count: Int(PQgetlength(res, row, column)))
-			}
-			result.append(rowData)
+			result.append(ResultRow(resPointer: res, row: row).columnValues())
 		}
 		return result
-	}
-
-	private func datatype(res: OpaquePointer, column: Int32) -> ResultValue.Type {
-		switch PQftype(res, column) {
-		case 20, 21, 23: return Int.self
-		case 700: return Double.self
-		case 25, 705: return String.self
-		case 17: return Data.self
-		case let type: fatalError("unsupported data type \(type)")
-		}
 	}
 }
 
