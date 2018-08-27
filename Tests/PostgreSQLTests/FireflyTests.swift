@@ -76,6 +76,13 @@ class FireflyTests: XCTestCase {
 		XCTAssertEqual(result, 8)
 	}
 
+	func testHandlesNull() throws {
+		XCTAssertNil(try connection.scalar(executing: "select null") as Int?)
+		XCTAssertNil(try connection.scalar(executing: "select null") as Double?)
+		XCTAssertNil(try connection.scalar(executing: "select null") as String?)
+		XCTAssertNil(try connection.scalar(executing: "select null") as Data?)
+	}
+
 }
 
 extension FireflyTests {
@@ -91,6 +98,7 @@ extension FireflyTests {
 		("testHandlesInt16", testHandlesInt16),
 		("testHandlesInt32", testHandlesInt32),
 		("testHandlesInt64", testHandlesInt64),
+		("testHandlesNull", testHandlesNull),
 	]
 }
 

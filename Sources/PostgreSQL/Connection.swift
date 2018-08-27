@@ -30,6 +30,7 @@ public struct Connection {
 			throw PostgreSQLError.message(lastErrorMessage(for: connPointer))
 		}
 
+		guard PQgetisnull(res, 0, 0) != 1 else { return nil }
 		guard let value = PQgetvalue(res, 0, 0) else { return nil }
 
 		return T.init(pqValue: value, count: Int(PQgetlength(res, 0, 0)))
