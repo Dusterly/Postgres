@@ -31,10 +31,7 @@ public struct Connection {
 			throw PostgreSQLError.message(lastErrorMessage(for: connPointer))
 		}
 
-		guard PQgetisnull(res, 0, 0) != 1 else { return nil }
-		guard let value = PQgetvalue(res, 0, 0) else { return nil }
-
-		return T.init(pqValue: value, count: Int(PQgetlength(res, 0, 0)))
+		return try Operation(resPointer: res).scalar()
 	}
 
 	public func resultSet(executing query: String) throws -> [[String: ResultValue]] {
@@ -42,12 +39,7 @@ public struct Connection {
 			throw PostgreSQLError.message(lastErrorMessage(for: connPointer))
 		}
 
-		var result: [[String: ResultValue]] = []
-		let rows = PQntuples(res)
-		for row in 0..<rows {
-			result.append(ResultRow(resPointer: res, row: row).columnValues())
-		}
-		return result
+		return try Operation(resPointer: res).resultSet()
 	}
 }
 
