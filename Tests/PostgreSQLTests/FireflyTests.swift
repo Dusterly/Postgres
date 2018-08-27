@@ -83,6 +83,13 @@ class FireflyTests: XCTestCase {
 		XCTAssertNil(try connection.scalar(executing: "select null") as Data?)
 	}
 
+	func testCanReturnRows() throws {
+		let result = try connection.resultSet(executing: "select name, role from Crew")
+
+		XCTAssertEqual(result.count, 8)
+		XCTAssertEqual(result.first as? [String: String], ["name": "Mal", "role": "Captain"])
+	}
+
 }
 
 extension FireflyTests {
@@ -99,6 +106,7 @@ extension FireflyTests {
 		("testHandlesInt32", testHandlesInt32),
 		("testHandlesInt64", testHandlesInt64),
 		("testHandlesNull", testHandlesNull),
+		("testCanReturnRows", testCanReturnRows),
 	]
 }
 
