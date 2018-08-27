@@ -16,19 +16,21 @@ extension Int32: ResultValue {}
 extension Int64: ResultValue {}
 extension Int: ResultValue {}
 
-extension Float: ResultValue {
+extension BinaryFloatingPoint where Self: ResultValue, Self: BitPatternRepresentable {
 	public init(pqValue bytes: UnsafeMutablePointer<Int8>, count: Int) {
-		let bigEndian = bytes.withMemoryRebound(to: UInt32.self, capacity: 1) { $0.pointee }
-		self.init(Float32(bitPattern: UInt32(bigEndian: bigEndian)))
+		let bigEndian = bytes.withMemoryRebound(to: BitPattern.self, capacity: 1) { $0.pointee }
+		self.init(bitPattern: BitPattern(bigEndian: bigEndian))
 	}
 }
 
-extension Double: ResultValue {
-	public init(pqValue bytes: UnsafeMutablePointer<Int8>, count: Int) {
-		let bigEndian = bytes.withMemoryRebound(to: UInt64.self, capacity: 1) { $0.pointee }
-		self.init(Float64(bitPattern: UInt64(bigEndian: bigEndian)))
-	}
+public protocol BitPatternRepresentable {
+	associatedtype BitPattern: FixedWidthInteger
+
+	init(bitPattern: BitPattern)
 }
+
+extension Float: ResultValue, BitPatternRepresentable {}
+extension Double: ResultValue, BitPatternRepresentable {}
 
 extension String: ResultValue {
 	public init(pqValue bytes: UnsafeMutablePointer<Int8>, count: Int) {
