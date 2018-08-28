@@ -39,22 +39,14 @@ public struct Connection {
 	}
 
 	private func resPointer(executing statement: String, parameters: [Int]) throws -> OpaquePointer {
-		let byteArrays = parameters.map { (v: Int) -> [Int8] in
-			var value = v.bigEndian
-			let buffer = withUnsafePointer(to: &value) { valuePointer in
-				return valuePointer.withMemoryRebound(to: Int8.self, capacity: 8) { bytePointer in
-					return UnsafeBufferPointer(start: bytePointer, count: 8)
-				}
-			}
-			return Array(buffer)
-		}
+		let byteArrays = parameters.map { $0.bytes }
 		guard let res = PQexecParams(
 				connPointer, statement,
-				Int32(byteArrays.count),
-				byteArrays.map { _ in 20 },
+				Int32(parameters.count),
+				parameters.map { $0.oid },
 				byteArrays.map { UnsafePointer<Int8>($0) },
-				byteArrays.map { _ in 8 },
-				byteArrays.map { _ in 1 },
+				byteArrays.map { Int32($0.count) },
+				parameters.map { _ in 1 },
 				1
 		)
 				else {
