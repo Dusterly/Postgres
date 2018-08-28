@@ -32,8 +32,8 @@ public struct Connection {
 		return try Operation(resPointer: res).scalar()
 	}
 
-	public func resultSet(executing query: String) throws -> [[String: ResultValue]] {
-		let res = try resPointer(executing: query, parameters: [])
+	public func resultSet(executing query: String, _ parameters: Int...) throws -> [[String: ResultValue]] {
+		let res = try resPointer(executing: query, parameters: parameters)
 
 		return try Operation(resPointer: res).resultSet()
 	}

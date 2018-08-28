@@ -95,6 +95,12 @@ class FireflyTests: XCTestCase {
 
 		XCTAssertEqual(result, 4)
 	}
+
+	func testHandlesIntegerParameters_2() throws {
+		let result = try connection.resultSet(executing: "select name, role from Crew where id = $1", 4)
+
+		XCTAssertEqual(result as? [[String: String]], [["name": "Kaylee", "role": "Mechanic"]])
+	}
 }
 
 extension FireflyTests {
@@ -112,6 +118,8 @@ extension FireflyTests {
 		("testHandlesInt64", testHandlesInt64),
 		("testHandlesNull", testHandlesNull),
 		("testCanReturnRows", testCanReturnRows),
+		("testHandlesIntegerParameters", testHandlesIntegerParameters),
+		("testHandlesIntegerParameters_2", testHandlesIntegerParameters_2),
 	]
 }
 
