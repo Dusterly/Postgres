@@ -48,10 +48,11 @@ public struct Connection {
 				byteArrays.map { Int32($0.count) },
 				parameters.map { $0.format },
 				1
-		)
+		), PQresultStatus(res) == PGRES_TUPLES_OK
 				else {
 			throw PostgreSQLError.message(lastErrorMessage(for: connPointer))
 		}
+
 		return res
 	}
 }

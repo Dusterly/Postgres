@@ -122,6 +122,10 @@ class FireflyTests: XCTestCase {
 
 		XCTAssertEqual(result as? [[String: String]], [["name": "Kaylee", "role": "Mechanic"]])
 	}
+
+	func testThrowsIfInvalidStatement() {
+		XCTAssertThrowsError(try connection.resultSet(executing: "select * from Crew where name = ", "Kaylee"))
+	}
 }
 
 extension FireflyTests {
@@ -144,6 +148,7 @@ extension FireflyTests {
 		("testHandlesDoubleParameters", testHandlesDoubleParameters),
 		("testHandlesDataParameters", testHandlesDataParameters),
 		("testHandlesStringParameters", testHandlesStringParameters),
+		("testThrowsIfInvalidStatement", testThrowsIfInvalidStatement),
 	]
 }
 
