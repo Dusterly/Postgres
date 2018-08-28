@@ -26,19 +26,19 @@ public struct Connection {
 		self.connPointer = conn
 	}
 
-	public func scalar<T: ResultValue>(executing query: String, _ parameters: Int...) throws -> T? {
+	public func scalar<T: ResultValue>(executing query: String, _ parameters: Parameter...) throws -> T? {
 		let res = try resPointer(executing: query, parameters: parameters)
 
 		return try Operation(resPointer: res).scalar()
 	}
 
-	public func resultSet(executing query: String, _ parameters: Int...) throws -> [[String: ResultValue]] {
+	public func resultSet(executing query: String, _ parameters: Parameter...) throws -> [[String: ResultValue]] {
 		let res = try resPointer(executing: query, parameters: parameters)
 
 		return try Operation(resPointer: res).resultSet()
 	}
 
-	private func resPointer(executing statement: String, parameters: [Int]) throws -> OpaquePointer {
+	private func resPointer(executing statement: String, parameters: [Parameter]) throws -> OpaquePointer {
 		let byteArrays = parameters.map { $0.bytes }
 		guard let res = PQexecParams(
 				connPointer, statement,
