@@ -26,6 +26,15 @@ public struct Connection {
 		self.connPointer = conn
 	}
 
+	public func execute(_ statement: String, _ parameters: Parameter...) throws {
+		do {
+			_ = try resPointer(executing: statement, parameters: parameters)
+		} catch {
+			print(error)
+			throw error
+		}
+	}
+
 	public func scalar<T: ResultValue>(executing query: String, _ parameters: Parameter...) throws -> T? {
 		let res = try resPointer(executing: query, parameters: parameters)
 
@@ -48,7 +57,7 @@ public struct Connection {
 				byteArrays.map { Int32($0.count) },
 				parameters.map { $0.format },
 				1
-		), PQresultStatus(res) == PGRES_TUPLES_OK
+		), [PGRES_TUPLES_OK, PGRES_COMMAND_OK].contains(PQresultStatus(res))
 				else {
 			throw PostgreSQLError.message(lastErrorMessage(for: connPointer))
 		}

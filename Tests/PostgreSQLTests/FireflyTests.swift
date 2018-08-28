@@ -11,6 +11,12 @@ class FireflyTests: XCTestCase {
 		return try! Connection(host: fireflyHost.value, database: fireflyDatabase.value, credentials: validCredentials)
 	}
 
+	override func tearDown() {
+		super.tearDown()
+
+		_ = try? connection.execute("drop table if exists Test")
+	}
+
 	func testThrowsIfDatabaseDoesNotExist() {
 		XCTAssertThrowsError(try Connection(host: fireflyHost.value, database: "doesn't exist", credentials: validCredentials))
 	}
@@ -126,6 +132,15 @@ class FireflyTests: XCTestCase {
 	func testThrowsIfInvalidStatement() {
 		XCTAssertThrowsError(try connection.resultSet(executing: "select * from Crew where name = ", "Kaylee"))
 	}
+
+	func testExecutesStatements() throws {
+		try connection.execute("create table Test ( answer Integer )")
+		try connection.execute("insert into Test values ($1)", 42)
+
+		let result: Int32? = try connection.scalar(executing: "select * from Test")
+
+		XCTAssertEqual(result, 42)
+	}
 }
 
 extension FireflyTests {
@@ -149,6 +164,7 @@ extension FireflyTests {
 		("testHandlesDataParameters", testHandlesDataParameters),
 		("testHandlesStringParameters", testHandlesStringParameters),
 		("testThrowsIfInvalidStatement", testThrowsIfInvalidStatement),
+		("testExecutesStatements", testExecutesStatements),
 	]
 }
 
