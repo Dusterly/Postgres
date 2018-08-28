@@ -6,15 +6,15 @@ import LibpqLinux
 
 import Foundation
 
-protocol Parameter {
+public protocol Parameter {
 	var oid: Oid { get }
 	var bytes: [Int8] { get }
 }
 
-extension FixedWidthInteger where Self: Parameter {
-	var oid: Oid { return 20 }
-	var bytes: [Int8] {
-		let size = MemoryLayout<Self>.size
+extension Int: Parameter {
+	public var oid: Oid { return 20 }
+	public var bytes: [Int8] {
+		let size = MemoryLayout<Int>.size
 		var value = bigEndian
 		let buffer = withUnsafePointer(to: &value) { valuePointer in
 			return valuePointer.withMemoryRebound(to: Int8.self, capacity: size) { bytePointer in
@@ -24,5 +24,3 @@ extension FixedWidthInteger where Self: Parameter {
 		return Array(buffer)
 	}
 }
-
-extension Int: Parameter {}
