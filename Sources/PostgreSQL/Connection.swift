@@ -46,7 +46,7 @@ public struct Connection {
 				parameters.map { $0.oid },
 				byteArrays.map { UnsafePointer<Int8>($0) },
 				byteArrays.map { Int32($0.count) },
-				parameters.map { _ in 1 },
+				parameters.map { $0.format },
 				1
 		)
 				else {

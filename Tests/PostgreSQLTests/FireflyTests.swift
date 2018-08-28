@@ -101,6 +101,27 @@ class FireflyTests: XCTestCase {
 
 		XCTAssertEqual(result as? [[String: String]], [["name": "Kaylee", "role": "Mechanic"]])
 	}
+
+	func testHandlesDoubleParameters() throws {
+		let result: Int? = try connection.scalar(executing: "select count(*) from TestData where double = $1", 3.0)
+
+		XCTAssertEqual(result, 1)
+	}
+
+	func testHandlesDataParameters() throws {
+// swiftlint:disable force_unwrapping
+		let result: Int? = try connection.scalar(executing:
+			"select count(*) from TestData where data = $1", "data_only".data(using: .ascii)!)
+// swiftlint:enable force_unwrapping
+
+		XCTAssertEqual(result, 1)
+	}
+
+	func testHandlesStringParameters() throws {
+		let result = try connection.resultSet(executing: "select name, role from Crew where name = $1", "Kaylee")
+
+		XCTAssertEqual(result as? [[String: String]], [["name": "Kaylee", "role": "Mechanic"]])
+	}
 }
 
 extension FireflyTests {
@@ -120,6 +141,9 @@ extension FireflyTests {
 		("testCanReturnRows", testCanReturnRows),
 		("testHandlesIntegerParameters", testHandlesIntegerParameters),
 		("testHandlesIntegerParameters_2", testHandlesIntegerParameters_2),
+		("testHandlesDoubleParameters", testHandlesDoubleParameters),
+		("testHandlesDataParameters", testHandlesDataParameters),
+		("testHandlesStringParameters", testHandlesStringParameters),
 	]
 }
 
