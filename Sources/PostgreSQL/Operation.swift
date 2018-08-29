@@ -22,7 +22,7 @@ struct Operation {
 		var result: [[String: ResultValue]] = []
 		let rows = PQntuples(resPointer)
 		for row in 0..<rows {
-			result.append(ResultRow(resPointer: resPointer, row: row).columnValues())
+			try result.append(ResultRow(resPointer: resPointer, row: row).columnValues())
 		}
 		return result
 	}

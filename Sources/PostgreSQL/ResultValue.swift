@@ -1,6 +1,7 @@
 import Foundation
 
 public protocol ResultValue {
+	static var pqType: PQType { get }
 	init(pqValue bytes: UnsafeMutablePointer<Int8>, count: Int)
 }
 

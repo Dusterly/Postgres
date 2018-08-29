@@ -58,7 +58,7 @@ public struct Connection {
 		guard let res = PQexecParams(
 				connPointer, statement,
 				Int32(parameters.count),
-				parameters.map { $0.oid },
+				parameters.map { $0.pqType.rawValue },
 				byteArrays.map { UnsafePointer<Int8>($0) },
 				byteArrays.map { Int32($0.count) },
 				parameters.map { $0.format },

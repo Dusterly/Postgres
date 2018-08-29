@@ -11,25 +11,25 @@ struct ResultRow {
 	let resPointer: OpaquePointer
 	let row: Int32
 
-	func columnValues() -> [String: ResultValue] {
-		return Dictionary(uniqueKeysWithValues: columnValuePairs().compactMap {
+	func columnValues() throws -> [String: ResultValue] {
+		return Dictionary(uniqueKeysWithValues: try columnValuePairs().compactMap {
 			guard let value = $1 else { return nil }
 			return ($0, value)
 		})
 	}
 
-	func columnValuePairs() -> [(String, ResultValue?)] {
+	func columnValuePairs() throws -> [(String, ResultValue?)] {
 		let columns = PQnfields(resPointer)
-		return (0..<columns).map { column in
-			return (name(ofColumnAt: column), value(at: column))
+		return try (0..<columns).map { column in
+			return (name(ofColumnAt: column), try value(at: column))
 		}
 	}
 
-	private func value(at column: Int32) -> ResultValue? {
+	private func value(at column: Int32) throws -> ResultValue? {
 		guard PQgetisnull(resPointer, row, column) != 1 else { return nil }
 		guard let pqValue = PQgetvalue(resPointer, row, column) else { return nil }
 
-		let type = self.type(ofColumnAt: column)
+		let type = try self.columnType(ofColumnAt: column)
 		let length = Int(PQgetlength(resPointer, row, column))
 		return type.init(pqValue: pqValue, count: length)
 	}
@@ -38,13 +38,26 @@ struct ResultRow {
 		return String(cString: PQfname(resPointer, Int32(column)))
 	}
 
-	private func type(ofColumnAt column: Int32) -> ResultValue.Type {
-		switch PQftype(resPointer, column) {
-		case 20, 21, 23: return Int.self
-		case 700: return Double.self
-		case 25, 705: return String.self
-		case 17: return Data.self
-		case let type: fatalError("unsupported data type \(type)")
+	private func columnType(ofColumnAt column: Int32) throws -> ResultValue.Type {
+		let pqType = try columnType(at: column)
+		return type(with: pqType)
+	}
+
+	private func columnType(at column: Int32) throws -> PQType {
+		let oid = PQftype(resPointer, column)
+		guard let pqType = PQType(rawValue: oid) else {
+			throw PostgreSQLError.message("unsupported OID data type \(oid)")
 		}
+		return pqType
+	}
+
+	func type(with pqType: PQType) -> ResultValue.Type {
+		let supportedTypes: [ResultValue.Type] = [
+			Int.self, Int16.self, Int32.self, Int64.self,
+			Float.self, Double.self,
+			String.self, Data.self
+		]
+
+		return supportedTypes.first { $0.pqType == pqType }!
 	}
 }
