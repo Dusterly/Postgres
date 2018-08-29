@@ -23,15 +23,6 @@ extension BinaryFloatingPoint where Self: ResultValue, Self: BitPatternRepresent
 	}
 }
 
-public protocol BitPatternRepresentable {
-	associatedtype BitPattern: FixedWidthInteger
-
-	init(bitPattern: BitPattern)
-}
-
-extension Float: ResultValue, BitPatternRepresentable {}
-extension Double: ResultValue, BitPatternRepresentable {}
-
 extension String: ResultValue {
 	public init(pqValue bytes: UnsafeMutablePointer<Int8>, count: Int) {
 		self.init(cString: bytes)
