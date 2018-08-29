@@ -5,7 +5,7 @@ public protocol ResultValue {
 	init(pqValue bytes: UnsafeMutablePointer<Int8>, count: Int)
 }
 
-extension FixedWidthInteger where Self: ResultValue {
+extension FixedWidthInteger {
 	public init(pqValue bytes: UnsafeMutablePointer<Int8>, count: Int) {
 		let bigEndian = bytes.withMemoryRebound(to: Self.self, capacity: 1) { $0.pointee }
 		self.init(bigEndian: bigEndian)
@@ -19,8 +19,8 @@ extension Int: ResultValue {}
 
 extension BinaryFloatingPoint where Self: ResultValue, Self: BitPatternRepresentable {
 	public init(pqValue bytes: UnsafeMutablePointer<Int8>, count: Int) {
-		let bigEndian = bytes.withMemoryRebound(to: BitPattern.self, capacity: 1) { $0.pointee }
-		self.init(bitPattern: BitPattern(bigEndian: bigEndian))
+		let bitPattern = BitPattern(pqValue: bytes, count: count)
+		self.init(bitPattern: bitPattern)
 	}
 }
 
