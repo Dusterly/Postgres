@@ -134,10 +134,10 @@ class FireflyTests: XCTestCase {
 	}
 
 	func testExecutesStatements() throws {
-		try connection.execute("create table Test ( answer Integer )")
+		try connection.execute("create table Test ( answer BigInt )")
 		try connection.execute("insert into Test values ($1)", 42)
 
-		let result: Int32? = try connection.scalar(executing: "select * from Test")
+		let result = try connection.scalar(executing: "select * from Test") as? Int
 
 		XCTAssertEqual(result, 42)
 	}

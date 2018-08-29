@@ -23,6 +23,9 @@ extension BinaryFloatingPoint where Self: ResultValue, Self: BitPatternRepresent
 	}
 }
 
+extension Float: ResultValue {}
+extension Double: ResultValue {}
+
 extension String: ResultValue {
 	public init(pqValue bytes: UnsafeMutablePointer<Int8>, count: Int) {
 		self.init(cString: bytes)

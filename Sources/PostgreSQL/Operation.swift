@@ -14,6 +14,10 @@ struct Operation {
 		return T.init(pqValue: value, count: Int(PQgetlength(resPointer, 0, 0)))
 	}
 
+	public func scalar() throws -> ResultValue? {
+		return try resultSet().first?.values.first
+	}
+
 	public func resultSet() throws -> [[String: ResultValue]] {
 		var result: [[String: ResultValue]] = []
 		let rows = PQntuples(resPointer)
